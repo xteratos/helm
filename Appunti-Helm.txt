@@ -1,0 +1,165 @@
+Helm
+
+A metà tra la CI e la CD, è un gestore di pacchetti per Kubernetes, sistema di containerizzazione dei servizi. 
+Helm ti permette di gestire le tue applicazioni Kubernetes in modo più semplice, utilizzando pacchetti chiamati "charts". 
+Ogni chart è una raccolta di file che descrivono un'applicazione Kubernetes o una parte di essa, come ad esempio un servizio o una replica di un database.
+Utilizzando Helm, puoi installare, aggiornare, gestire e disinstallare le tue applicazioni Kubernetes con semplici comandi di linea di comando. 
+Inoltre, puoi utilizzare Helm per gestire dipendenze tra le tue applicazioni e condividere le tue applicazioni con gli altri utilizzando il registry di Helm.
+
+Strumento per deployare in modo ottimizzato Kubernetes. Quando l'architettura K8S diventa più complessa, perciò, conviene utilizzare uno strumento come Helm.
+Esso permette di impacchettare e configurare i Deployments in modo più rapido attraverso meno errori, anche del codice.
+
+Tramite i charts deployate le applicazioni di Kubernetes. Si ha un certo package manager che installa e gestisce le app K8S tramite Helm.
+Helm e i charts sono packages per Deployments in pacchetti per Deployments.
+Si hanno due parti:
+1) Il tool stesso, Helm;
+2) Server, detto Tiller, cioè la parte che risiede nei cluster K8S, che ascolta gli eventi.
+Quando si inserisce il comando di installazione di Helm, il server Tiller riceve la richiesta e installa il pacchetto appropriato.
+I charts di Helm danno la possibilità di gestire packages K8S tramite click di GUI o una CLI.
+Tutti i charts di Helm contengono:
+1) Una descrizione del pacchetto, chart.yaml;
+2) uno o più templates che contengono i file manifesto di K8S.
+Helm offre una serie di repositories che sono ufficiali e non su GitHub.
+I Charts possono essere salvati su un disco, pullati da GitHub (da repositories remoti) e richiamati da locale tramite 'helm install'.
+Ad esempio helm install stable/<chart>
+Perciò Helm impacchetta in modo semplice applicativi (Deployments) K8S.
+
+Il comando helm init viene ancora utilizzato per installare e configurare il client di Helm sulla tua macchina locale. 
+Quando esegui helm init, il client di Helm viene installato e il componente server di Helm, chiamato Tiller, viene deployato sulla tua installazione di Kubernetes.
+Tiller è responsabile di gestire le richieste del client di Helm e di applicare le modifiche necessarie alle risorse Kubernetes per soddisfare le richieste dell'utente.
+Nota che a partire da Helm 3, Tiller non è più utilizzato e il comando helm init non è più necessario. 
+Tuttavia, se stai utilizzando una versione di Helm precedente a Helm 3, dovrai eseguire helm init per installare e configurare il client e Tiller.
+
+Il deploy tramite Helm deve tener conto di un'alberatura che contenga:
+1) un file chart.yaml, con le caratteristiche principali della release da rilasciare;
+2) una cartella template con gli yaml della risorsa da deployare.
+All'interno è possibile usare variabili dinamiche tra {{ }}, ad esempio Release.Name che prende dinamicamente il nome della Release, oppure Release.Service come valore della chiave heritage.
+
+Si effettua la release con:
+helm install <nome-release> <sorgente-file-release>
+
+Con il seguente comando si testa senza deployare nulla:
+helm install <nome-release> --debug --dry-run <sorgente-file-release>
+
+-----
+
+Value
+Files, oggetti di Helm che vanno a definire configurazioni e valori di default.
+
+helm inspect values
+per verificare i valori di configurazioni.
+
+Si usano file values.yaml, helm install o -f, --values valueFile
+
+Ci possono essere anche blocchi if/else o range.
+
+{{- if .Values.deployment.volumes}}
+volumes:
+{{- range.Values.deployment.volumes }}
+- name: {{ .name }}
+  secret:
+    secretName: {{ .secretName }}
+{{- end }}
+{{- end }}
+
+.name fa riferimento a .Values.deployment.volumes.name, e così per .secret .....
+
+c'è anche blocco with:
+
+with .Values.deployment
+
+Release.Name
+Release.Time
+Release.Namespace
+non possono essere sovrascritti!
+
+Perciò si crea lo yaml inserendo i valori predefiniti e negli yaml da richiamare ci saranno i parametri .Values.x.y se definito ad esempio y sotto x.
+
+I comandi principali da lanciare sono:
+
+helm create: costruire nuovo chart
+helm fetch: scaricare e spacchettare chart da un repository in una local directory.
+helm rollback: permette di andare a versione precedente;
+helm status: mostra lo stato di una release richiesta
+helm upgrade: fare un upgrade di versione tra versione precedente e successivo.
+
+Esempi:
+
+helm create <nome-chart> --> crea alberatura
+
+helm fetch [flags] [chart URL | repo/chartname] [...]
+con il flag --verify si verifica la provenienza;
+
+helm upgrade [RELEASE] [CHART] [flags]
+RELEASE con --version e --devel; indicare ad esempio stable/mariadb se c'è una chart reference; si può inserire una path di directory della chart, o una impacchettata o una URL.
+
+helm status [flags] <release-name>
+si vedono le info varie relative alla release
+
+helm rollback [flags] [RELEASE] [REVISION]
+
+helm history <release>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
